@@ -8,8 +8,8 @@ import {
     adaptHotkey,
     getFrontend,
     getBackend,
-    // Setting,
-    // fetchPost,
+    Setting,
+    fetchPost,
     Protyle,
     openWindow,
     IOperation,
@@ -29,13 +29,7 @@ import {
     saveLayout
 } from "siyuan";
 import "./index.scss";
-import { IMenuItem } from "siyuan/types";
-
-import HelloExample from "@/hello.svelte";
-import SettingExample from "@/setting-example.svelte";
-
-import { SettingUtils } from "./libs/setting-utils";
-import { svelteDialog } from "./libs/dialog";
+import {IMenuItem} from "siyuan/types";
 
 const STORAGE_NAME = "menu-config";
 const TAB_TYPE = "custom_tab";
@@ -46,8 +40,6 @@ export default class PluginSample extends Plugin {
     private custom: () => Custom;
     private isMobile: boolean;
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
-    private settingUtils: SettingUtils;
-
 
     updateProtyleToolbar(toolbar: Array<string | IMenuItem>) {
         toolbar.push("|");
@@ -64,10 +56,8 @@ export default class PluginSample extends Plugin {
         return toolbar;
     }
 
-    async onload() {
-        this.data[STORAGE_NAME] = { readonlyText: "Readonly" };
-
-        console.log("loading plugin-sample", this.i18n);
+    onload() {
+        this.data[STORAGE_NAME] = {readonlyText: "Readonly"};
 
         const frontEnd = getFrontend();
         this.isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile";
@@ -79,26 +69,15 @@ export default class PluginSample extends Plugin {
 <path d="M20 13.333c0-0.733 0.6-1.333 1.333-1.333s1.333 0.6 1.333 1.333c0 0.733-0.6 1.333-1.333 1.333s-1.333-0.6-1.333-1.333zM10.667 12h6.667v-2.667h-6.667v2.667zM29.333 10v9.293l-3.76 1.253-2.24 7.453h-7.333v-2.667h-2.667v2.667h-7.333c0 0-3.333-11.28-3.333-15.333s3.28-7.333 7.333-7.333h6.667c1.213-1.613 3.147-2.667 5.333-2.667 1.107 0 2 0.893 2 2 0 0.28-0.053 0.533-0.16 0.773-0.187 0.453-0.347 0.973-0.427 1.533l3.027 3.027h2.893zM26.667 12.667h-1.333l-4.667-4.667c0-0.867 0.12-1.72 0.347-2.547-1.293 0.333-2.347 1.293-2.787 2.547h-8.227c-2.573 0-4.667 2.093-4.667 4.667 0 2.507 1.627 8.867 2.68 12.667h2.653v-2.667h8v2.667h2.68l2.067-6.867 3.253-1.093v-4.707z"></path>
 </symbol>`);
 
-        let tabDiv = document.createElement("div");
-        let app = null;
         this.custom = this.addTab({
             type: TAB_TYPE,
             init() {
-                app = new HelloExample({
-                    target: tabDiv,
-                    props: {
-                        app: this.app,
-                        blockID: this.data.blockID
-                    }
-                });
-                this.element.appendChild(tabDiv);
-                console.log(this.element);
+                this.element.innerHTML = `<div class="plugin-sample__custom-tab">${this.data.text}</div>`;
             },
             beforeDestroy() {
                 console.log("before destroy tab:", TAB_TYPE);
             },
             destroy() {
-                app?.$destroy();
                 console.log("destroy tab:", TAB_TYPE);
             }
         });
@@ -118,11 +97,10 @@ export default class PluginSample extends Plugin {
                 console.log(this.getOpenedTab());
             },
         });
-
         this.addDock({
             config: {
                 position: "LeftBottom",
-                size: { width: 200, height: 0 },
+                size: {width: 200, height: 0},
                 icon: "iconSaving",
                 title: "Custom Dock",
                 hotkey: "⌥⌘W",
@@ -140,27 +118,26 @@ export default class PluginSample extends Plugin {
             init: (dock) => {
                 if (this.isMobile) {
                     dock.element.innerHTML = `<div class="toolbar toolbar--border toolbar--dark">
-                    <svg class="toolbar__icon"><use xlink:href="#iconEmoji"></use></svg>
-                        <div class="toolbar__text">Custom Dock</div>
-                    </div>
-                    <div class="fn__flex-1 plugin-sample__custom-dock">
-                        ${dock.data.text}
-                    </div>
-                    </div>`;
+    <svg class="toolbar__icon"><use xlink:href="#iconEmoji"></use></svg>
+        <div class="toolbar__text">Custom Dock</div>
+    </div>
+    <div class="fn__flex-1 plugin-sample__custom-dock">
+        ${dock.data.text}
+    </div>
+</div>`;
                 } else {
                     dock.element.innerHTML = `<div class="fn__flex-1 fn__flex-column">
-                    <div class="block__icons">
-                        <div class="block__logo">
-                            <svg class="block__logoicon"><use xlink:href="#iconEmoji"></use></svg>
-                            Custom Dock
-                        </div>
-                        <span class="fn__flex-1 fn__space"></span>
-                        <span data-type="min" class="block__icon b3-tooltips b3-tooltips__sw" aria-label="Min ${adaptHotkey("⌘W")}"><svg class="block__logoicon"><use xlink:href="#iconMin"></use></svg></span>
-                    </div>
-                    <div class="fn__flex-1 plugin-sample__custom-dock">
-                        ${dock.data.text}
-                    </div>
-                    </div>`;
+    <div class="block__icons">
+        <div class="block__logo">
+            <svg class="block__logoicon"><use xlink:href="#iconEmoji"></use></svg>Custom Dock
+        </div>
+        <span class="fn__flex-1 fn__space"></span>
+        <span data-type="min" class="block__icon b3-tooltips b3-tooltips__sw" aria-label="Min ${adaptHotkey("⌘W")}"><svg><use xlink:href="#iconMin"></use></svg></span>
+    </div>
+    <div class="fn__flex-1 plugin-sample__custom-dock">
+        ${dock.data.text}
+    </div>
+</div>`;
                 }
             },
             destroy() {
@@ -168,141 +145,34 @@ export default class PluginSample extends Plugin {
             }
         });
 
-        this.settingUtils = new SettingUtils({
-            plugin: this, name: STORAGE_NAME
+        const textareaElement = document.createElement("textarea");
+        this.setting = new Setting({
+            confirmCallback: () => {
+                this.saveData(STORAGE_NAME, {readonlyText: textareaElement.value});
+            }
         });
-        this.settingUtils.addItem({
-            key: "Input",
-            value: "",
-            type: "textinput",
+        this.setting.addItem({
             title: "Readonly text",
-            description: "Input description",
-            action: {
-                // Called when focus is lost and content changes
-                callback: () => {
-                    // Return data and save it in real time
-                    let value = this.settingUtils.takeAndSave("Input");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "InputArea",
-            value: "",
-            type: "textarea",
-            title: "Readonly text",
-            description: "Input description",
-            // Called when focus is lost and content changes
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("InputArea");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Check",
-            value: true,
-            type: "checkbox",
-            title: "Checkbox text",
-            description: "Check description",
-            action: {
-                callback: () => {
-                    // Return data and save it in real time
-                    let value = !this.settingUtils.get("Check");
-                    this.settingUtils.set("Check", value);
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Select",
-            value: 1,
-            type: "select",
-            title: "Select",
-            description: "Select description",
-            options: {
-                1: "Option 1",
-                2: "Option 2"
-            },
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("Select");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Slider",
-            value: 50,
-            type: "slider",
-            title: "Slider text",
-            description: "Slider description",
-            direction: "column",
-            slider: {
-                min: 0,
-                max: 100,
-                step: 1,
-            },
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("Slider");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Btn",
-            value: "",
-            type: "button",
-            title: "Button",
-            description: "Button description",
-            button: {
-                label: "Button",
-                callback: () => {
-                    showMessage("Button clicked");
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Custom Element",
-            value: "",
-            type: "custom",
             direction: "row",
-            title: "Custom Element",
-            description: "Custom Element description",
-            //Any custom element must offer the following methods
-            createElement: (currentVal: any) => {
-                let div = document.createElement('div');
-                div.style.border = "1px solid var(--b3-theme-primary)";
-                div.contentEditable = "true";
-                div.textContent = currentVal;
-                return div;
+            description: "Open plugin url in browser",
+            createActionElement: () => {
+                textareaElement.className = "b3-text-field fn__block";
+                textareaElement.placeholder = "Readonly text in the menu";
+                textareaElement.value = this.data[STORAGE_NAME].readonlyText;
+                return textareaElement;
             },
-            getEleVal: (ele: HTMLElement) => {
-                return ele.textContent;
-            },
-            setEleVal: (ele: HTMLElement, val: any) => {
-                ele.textContent = val;
-            }
         });
-        this.settingUtils.addItem({
-            key: "Hint",
-            value: "",
-            type: "hint",
-            title: this.i18n.hintTitle,
-            description: this.i18n.hintDesc,
+        const btnaElement = document.createElement("button");
+        btnaElement.className = "b3-button b3-button--outline fn__flex-center fn__size200";
+        btnaElement.textContent = "Open";
+        btnaElement.addEventListener("click", () => {
+            window.open("https://github.com/siyuan-note/plugin-sample");
         });
-
-        try {
-            this.settingUtils.load();
-        } catch (error) {
-            console.error("Error loading settings storage, probably empty config json:", error);
-        }
-
+        this.setting.addItem({
+            title: "Open plugin url",
+            description: "Open plugin url in browser",
+            actionElement: btnaElement,
+        });
 
         this.protyleSlash = [{
             filter: ["insert emoji 😊", "插入表情 😊", "crbqwx"],
@@ -359,7 +229,6 @@ export default class PluginSample extends Plugin {
                 }
             }
         });
-
         const statusIconTemp = document.createElement("template");
         statusIconTemp.innerHTML = `<div class="toolbar__item ariaLabel" aria-label="Remove plugin-sample Data">
     <svg>
@@ -369,7 +238,7 @@ export default class PluginSample extends Plugin {
         statusIconTemp.content.firstElementChild.addEventListener("click", () => {
             confirm("⚠️", this.i18n.confirmRemove.replace("${name}", this.name), () => {
                 this.removeData(STORAGE_NAME).then(() => {
-                    this.data[STORAGE_NAME] = { readonlyText: "Readonly" };
+                    this.data[STORAGE_NAME] = {readonlyText: "Readonly"};
                     showMessage(`[${this.name}]: ${this.i18n.removedData}`);
                 });
             });
@@ -377,22 +246,12 @@ export default class PluginSample extends Plugin {
         this.addStatusBar({
             element: statusIconTemp.content.firstElementChild as HTMLElement,
         });
-        // this.loadData(STORAGE_NAME);
-        this.settingUtils.load();
+        this.loadData(STORAGE_NAME);
         console.log(`frontend: ${getFrontend()}; backend: ${getBackend()}`);
-
-        console.log(
-            "Official settings value calling example:\n" +
-            this.settingUtils.get("InputArea") + "\n" +
-            this.settingUtils.get("Slider") + "\n" +
-            this.settingUtils.get("Select") + "\n"
-        );
     }
 
-    async onunload() {
+    onunload() {
         console.log(this.i18n.byePlugin);
-        showMessage("Goodbye SiYuan Plugin");
-        console.log("onunload");
     }
 
     uninstall() {
@@ -411,24 +270,34 @@ export default class PluginSample extends Plugin {
         });
         return options;
     }
-    /**
-     * A custom setting pannel provided by svelte
-     */
-    openSetting(): void {
-        let dialog = new Dialog({
-            title: "SettingPannel",
-            content: `<div id="SettingPanel" style="height: 100%;"></div>`,
-            width: "800px",
-            destroyCallback: (options) => {
-                console.log("destroyCallback", options);
-                //You'd better destroy the component when the dialog is closed
-                pannel.$destroy();
-            }
+
+    /* 自定义设置
+    openSetting() {
+        const dialog = new Dialog({
+            title: this.name,
+            content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="readonly text in the menu"></textarea></div>
+<div class="b3-dialog__action">
+    <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${this.i18n.save}</button>
+</div>`,
+            width: this.isMobile ? "92vw" : "520px",
         });
-        let pannel = new SettingExample({
-            target: dialog.element.querySelector("#SettingPanel"),
+        const inputElement = dialog.element.querySelector("textarea");
+        inputElement.value = this.data[STORAGE_NAME].readonlyText;
+        const btnsElement = dialog.element.querySelectorAll(".b3-button");
+        dialog.bindInput(inputElement, () => {
+            (btnsElement[1] as HTMLButtonElement).click();
+        });
+        inputElement.focus();
+        btnsElement[0].addEventListener("click", () => {
+            dialog.destroy();
+        });
+        btnsElement[1].addEventListener("click", () => {
+            this.saveData(STORAGE_NAME, {readonlyText: inputElement.value});
+            dialog.destroy();
         });
     }
+    */
 
     private eventBusPaste(event: any) {
         // 如果需异步处理请调用 preventDefault， 否则会进行默认处理
@@ -439,11 +308,11 @@ export default class PluginSample extends Plugin {
         });
     }
 
-    private eventBusLog({ detail }: any) {
+    private eventBusLog({detail}: any) {
         console.log(detail);
     }
 
-    private blockIconEvent({ detail }: any) {
+    private blockIconEvent({detail}: any) {
         detail.menu.addItem({
             id: "pluginSample_removeSpace",
             iconHTML: "",
@@ -467,19 +336,31 @@ export default class PluginSample extends Plugin {
     }
 
     private showDialog() {
-        const docId = this.getEditor().protyle.block.rootID;
-        svelteDialog({
+        const dialog = new Dialog({
             title: `SiYuan ${Constants.SIYUAN_VERSION}`,
-            width: this.isMobile ? "92vw" : "720px",
-            constructor: (container: HTMLElement) => {
-                return new HelloExample({
-                    target: container,
-                    props: {
-                        app: this.app,
-                        blockID: docId
-                    }
-                });
-            }
+            content: `<div class="b3-dialog__content">
+    <div>appId:</div>
+    <div class="fn__hr"></div>
+    <div class="plugin-sample__time">${this.app.appId}</div>
+    <div class="fn__hr"></div>
+    <div class="fn__hr"></div>
+    <div>API demo:</div>
+    <div class="fn__hr"></div>
+    <div class="plugin-sample__time">System current time: <span id="time"></span></div>
+    <div class="fn__hr"></div>
+    <div class="fn__hr"></div>
+    <div>Protyle demo:</div>
+    <div class="fn__hr"></div>
+    <div id="protyle" style="height: 360px;"></div>
+</div>`,
+            width: this.isMobile ? "92vw" : "560px",
+            height: "540px",
+        });
+        new Protyle(this.app, dialog.element.querySelector("#protyle"), {
+            blockId: this.getEditor().protyle.block.rootID,
+        });
+        fetchPost("/api/system/currentTime", {}, (response) => {
+            dialog.element.querySelector("#time").innerHTML = new Date(response.data).toString();
         });
     }
 
@@ -489,19 +370,11 @@ export default class PluginSample extends Plugin {
         });
         menu.addItem({
             icon: "iconSettings",
-            label: "Open SiYuan Setting",
+            label: "Open Setting",
             click: () => {
                 openSetting(this.app);
             }
         });
-        menu.addItem({
-            icon: "iconSettings",
-            label: "Open Plugin Setting",
-            click: () => {
-                this.openSetting();
-            }
-        });
-        menu.addSeparator();
         menu.addItem({
             icon: "iconDrag",
             label: "Open Attribute Panel",
@@ -531,7 +404,7 @@ export default class PluginSample extends Plugin {
         if (!this.isMobile) {
             menu.addItem({
                 icon: "iconFace",
-                label: "Open Custom Tab(open doc first)",
+                label: "Open Custom Tab",
                 click: () => {
                     const tab = openTab({
                         app: this.app,
@@ -539,8 +412,7 @@ export default class PluginSample extends Plugin {
                             icon: "iconFace",
                             title: "Custom Tab",
                             data: {
-                                // text: platformUtils.isHuawei() ? "Hello, Huawei!" : "This is my custom tab",
-                                blockID: this.getEditor().protyle.block.rootID,
+                                text: platformUtils.isHuawei() ? "Hello, Huawei!" : "This is my custom tab",
                             },
                             id: this.name + TAB_TYPE
                         },
@@ -605,7 +477,7 @@ export default class PluginSample extends Plugin {
                 label: "Open Float Layer(open doc first)",
                 click: () => {
                     this.addFloatLayer({
-                        refDefs: [{ refID: this.getEditor().protyle.block.rootID }],
+                        refDefs: [{refID: this.getEditor().protyle.block.rootID}],
                         x: window.innerWidth - 768 - 120,
                         y: 32,
                         isBacklink: false
@@ -617,7 +489,7 @@ export default class PluginSample extends Plugin {
                 label: "Open Doc Window(open doc first)",
                 click: () => {
                     openWindow({
-                        doc: { id: this.getEditor().protyle.block.rootID }
+                        doc: {id: this.getEditor().protyle.block.rootID}
                     });
                 }
             });

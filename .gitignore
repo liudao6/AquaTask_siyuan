@@ -1,11 +1,9 @@
 .idea
-.vscode
-.DS_Store
-pnpm-lock.yaml
-package-lock.json
-package.zip
 node_modules
-dev
+.DS_Store
+.eslintcache
 dist
-build
-tmp
+package.zip
+index.css
+index.js
+/i18n
