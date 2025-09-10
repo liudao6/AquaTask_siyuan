@@ -1,8 +1,8 @@
 {
-  "name": "plugin-sample",
-  "author": "Vanessa",
+  "name": "aquatask",
+  "author": "Jules",
   "url": "https://github.com/siyuan-note/plugin-sample",
-  "version": "0.4.2",
+  "version": "0.0.1",
   "minAppVersion": "3.3.0",
   "backends": [
     "windows",
@@ -22,12 +22,12 @@
   ],
   "disabledInPublish": false,
   "displayName": {
-    "default": "Plugin Sample",
-    "zh_CN": "插件示例"
+    "default": "AquaTask",
+    "zh_CN": "AquaTask"
   },
   "description": {
-    "default": "This is a plugin sample",
-    "zh_CN": "这是一个插件示例"
+    "default": "A personal intelligent task management system.",
+    "zh_CN": "个人智能任务管理系统"
   },
   "readme": {
     "default": "README.md",
